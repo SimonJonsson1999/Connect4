@@ -9,15 +9,13 @@ class Board():
         self.nrows = 6
         self.ncols = 7
         self.board_state = np.zeros([self.nrows,self.ncols])
-        # print(self.board_state)
-
+        self.margin = 50
+        self.smargin = 5
     def draw(self, screen):
         ##TODO ##
         # Improve drawing to be dynamic with respect to window size and margins, will be a headache.
         #  Works fine for implementing and testing logic
-        margin = 50
-        smargin = 5
-        backboard = pg.Rect(margin, margin, WIDTH - 2*margin, HEIGTH - 2*margin)
+        backboard = pg.Rect(self.margin, self.margin, WIDTH - 2*self.margin, HEIGTH - 2*self.margin)
         pg.draw.rect(screen, BLUE, backboard)
         for i in range(self.nrows):
              for j in range(self.ncols):
@@ -35,8 +33,12 @@ class Board():
                 
     def move(self, col, number):
         index = np.argwhere(self.board_state[:,col] == 0)
-        self.board_state[np.max(index), col] = number
-        return np.max(index), col
+        if len(index) > 0:
+            if np.max(index) >= 0:
+                self.board_state[np.max(index), col] = number
+                return True
+            return False
+        
     
     
     def checkwin(self, player):
@@ -50,3 +52,4 @@ class Board():
                 return True
             
         return False
+

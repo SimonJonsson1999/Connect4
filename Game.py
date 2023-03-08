@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from settings import *
 from Board import Board
+import numpy as np
 
 class Game():
     def  __init__(self):
@@ -10,6 +11,8 @@ class Game():
         self.clock = pg.time.Clock()
         ## make a array with objects loaded from file later
         self.Board = Board()
+        self.turn = 1
+        
 
     
     def new_game(self):
@@ -23,6 +26,14 @@ class Game():
     def draw(self):
         self.screen.fill('black')
         self.Board.draw(self.screen)
+        self.draw_turn()
+
+    def draw_turn(self):
+        if self.turn == 1:
+           pg.draw.circle(self.screen, RED,(25 , 25), 10)
+        elif self.turn == -1:
+           pg.draw.circle(self.screen, YELLOW, (25 , 25), 10)
+
 
     def check_events(self):
         for event in pg.event.get():
@@ -30,10 +41,18 @@ class Game():
                 pg.quit()
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
-                row, col = self.Board.move(1,1)
-                print(self.Board.checkwin(1))
+                x, y = pg.mouse.get_pos()
+                col = self.get_col_from_mouse_pos(x, y)
+                move_made = self.Board.move(col,self.turn)
+                print(self.Board.checkwin(self.turn))
+                if move_made:
+                    self.turn *= -1
+                
                 
 
+    def get_col_from_mouse_pos(self, x, y):
+        col = int(np.floor((x + self.Board.margin)/115)) - 1
+        return col
 
     def run(self):
         while True:
